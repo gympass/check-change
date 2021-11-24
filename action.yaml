@@ -1,0 +1,26 @@
+name: 'Check Change'
+description: 'Checks for files changes within commits'
+branding:
+  icon: 'cloud'
+  color: 'gray-dark'
+inputs:
+  regexp:
+    description: 'regexp to use for comparison'
+    required: true
+outputs:
+  changed:
+    description: "Whether changes were detected or not"
+    value: ${{ steps.check-result.outputs.changed }}
+runs:
+  using: "composite"
+  steps:
+    - name: "Run check-change"
+      id: check-result
+      shell: bash
+      run: |
+        set -eux
+        entrypoint='/gympass/check-change'
+        if [ -n '${{ inputs.entrypoint }}' ]; then entrypoint="${{ inputs.entrypoint }}"; fi
+        cmd=("$entrypoint")
+        if [ -n '${{ inputs.regexp }}' ]; then cmd+=(-r '${{ inputs.regexp }}'); fi
+        "${cmd[@]}"
